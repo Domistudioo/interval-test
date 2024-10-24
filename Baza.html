@@ -26,6 +26,10 @@
             font-size: 20px;
             font-weight: bold;
             margin-top: 20px;
+            color: green;
+        }
+        .feedback.error {
+            color: red;
         }
         .disabled {
             background-color: #ddd;
@@ -118,6 +122,8 @@
             <label>Prawidłowe: <span id="correct-counter">0</span></label>
             <label>Nieprawidłowe: <span id="wrong-counter">0</span></label>
         </div>
+        <!-- Miejsce na feedback -->
+        <div id="feedback" class="feedback"></div>
     </section>
 
     <script>
@@ -218,20 +224,25 @@
 
         // Funkcja do sprawdzenia odpowiedzi
         function checkAnswer(interval) {
+            const feedbackElement = document.getElementById('feedback');
             if (currentInterval === null) {
-                alert('Najpierw uruchom test!');
+                feedbackElement.textContent = 'Najpierw uruchom test!';
+                feedbackElement.classList.add('error');
                 return;
             }
 
             if (interval === currentInterval) {
                 correctCounter++;
                 document.getElementById('correct-counter').textContent = correctCounter;
-                alert('Poprawna odpowiedź!');
+                feedbackElement.textContent = 'Poprawna odpowiedź!';
+                feedbackElement.classList.remove('error');
             } else {
                 wrongCounter++;
                 document.getElementById('wrong-counter').textContent = wrongCounter;
-                alert('Niepoprawna odpowiedź.');
+                feedbackElement.textContent = `Niepoprawna odpowiedź. Poprawny interwał to: ${getIntervalName(currentInterval)}`;
+                feedbackElement.classList.add('error');
             }
+
             setTimeout(startTest, 2000); // Automatyczne wygenerowanie nowego interwału po odpowiedzi
         }
 
@@ -240,7 +251,9 @@
             if (currentInterval !== null && baseNoteForRepeat !== null) {
                 playInterval(currentInterval, baseNoteForRepeat); // Powtórzenie tego samego interwału z tą samą nutą bazową
             } else {
-                alert('Najpierw uruchom test!');
+                const feedbackElement = document.getElementById('feedback');
+                feedbackElement.textContent = 'Najpierw uruchom test!';
+                feedbackElement.classList.add('error');
             }
         }
 
@@ -255,6 +268,26 @@
                 }
             });
         });
+
+        // Funkcja zwracająca nazwę interwału
+        function getIntervalName(interval) {
+            const intervalNames = [
+                'Pryma (1)',
+                'Sekunda mała (2>)',
+                'Sekunda wielka (2)',
+                'Tercja mała (3>)',
+                'Tercja wielka (3)',
+                'Kwarta czysta (4)',
+                'Tryton (4</5>)',
+                'Kwinta czysta (5)',
+                'Seksta mała (6>)',
+                'Seksta wielka (6)',
+                'Septyma mała (7)',
+                'Septyma wielka (7<)',
+                'Oktawa (8)'
+            ];
+            return intervalNames[interval];
+        }
     </script>
 </body>
 </html>
