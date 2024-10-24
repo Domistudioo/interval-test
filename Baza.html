@@ -159,6 +159,7 @@
         let correctCounter = 0;
         let wrongCounter = 0;
         let currentInterval = null;
+        let baseNoteForRepeat = null; // Zmienna do przechowywania nuty bazowej dla powtórzenia
 
         // Funkcja do odtwarzania dźwięku
         function playNoteAudio(note) {
@@ -198,8 +199,8 @@
         function startTest() {
             currentInterval = generateInterval();
             if (currentInterval !== null) {
-                const baseNote = getRandomBaseNote();
-                playInterval(currentInterval, baseNote);
+                baseNoteForRepeat = getRandomBaseNote(); // Zapisujemy nutę początkową
+                playInterval(currentInterval, baseNoteForRepeat);
             }
         }
 
@@ -236,9 +237,8 @@
 
         // Funkcja do powtórzenia interwału
         function repeatInterval() {
-            if (currentInterval !== null) {
-                const baseNote = getRandomBaseNote();
-                playInterval(currentInterval, baseNote);
+            if (currentInterval !== null && baseNoteForRepeat !== null) {
+                playInterval(currentInterval, baseNoteForRepeat); // Powtórzenie tego samego interwału z tą samą nutą bazową
             } else {
                 alert('Najpierw uruchom test!');
             }
