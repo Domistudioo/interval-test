@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test na Interwały</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        label {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        .test-controls {
+            margin-top: 20px;
+        }
+        .feedback {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .disabled {
+            background-color: #ddd;
+            pointer-events: none;
+        }
+        .section {
+            margin-top: 50px;
+        }
+        /* Nowe style dla listy interwałów */
+        #interval-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .interval-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test na Interwały</h1>
+
+    <!-- Interwały -->
+    <section>
+        <h2>Interwały</h2>
+        <div id="interval-buttons">
+            <div class="interval-item">
+                <input type="checkbox" id="interval-0" checked>
+                <button id="btn-interval-0" onclick="checkAnswer(0)">Pryma (1)</button>
+            </div>
+            <div class="interval-item">
+                <input type="checkbox" id="interval-1" checked>
+                <button id="btn-interval-1" onclick="checkAnswer(1)">Sekunda mała (2>)</button>
+            </div>
+            <div class="interval-item">
+                <input type="checkbox" id="interval-2" checked>
+                <button id="btn-interval-2" onclick="checkAnswer(2)">Sekunda wielka (2)</button>
+            </div>
+            <div class="interval-item">
+                <input type="checkbox" id="interval-3" checked>
+                <button id="btn-interval-3" onclick="checkAnswer(3)">Tercja mała (3>)</button>
+            </div>
+            <div class="interval-item">
+                <input type="checkbox" id="interval-4" checked>
+                <button id="btn-interval-4" onclick="checkAnswer(4)">Tercja wielka (3)</button>
+            </div>
+            <div class="interval-item">
+                <input type="checkbox" id="interval-5" checked>
+                <button id="btn-interval-5" onclick="checkAnswer(5)">Kwarta czysta (4)</button>
+            </div>
+            <div class="interval-item">
+                <input type="checkbox" id="interval-6" checked>
+                <button id="btn-interval-6" onclick="checkAnswer(6)">Tryton (4</5>)</button>
+            </div>
+            <div class="interval-item">
+                <input type="checkbox" id="interval-7" checked>
+                <button id="btn-interval-7" onclick="checkAnswer(7)">Kwinta czysta (5)</button>
+            </div>
+            <div class="interval-item">
+                <input type="checkbox" id="interval-8" checked>
+                <button id="btn-interval-8" onclick="checkAnswer(8)">Seksta mała (6>)</button>
+            </div>
+            <div class="interval-item">
+                <input type="checkbox" id="interval-9" checked>
+                <button id="btn-interval-9" onclick="checkAnswer(9)">Seksta wielka (6)</button>
+            </div>
+            <div class="interval-item">
+                <input type="checkbox" id="interval-10" checked>
+                <button id="btn-interval-10" onclick="checkAnswer(10)">Septyma mała (7)</button>
+            </div>
+            <div class="interval-item">
+                <input type="checkbox" id="interval-11" checked>
+                <button id="btn-interval-11" onclick="checkAnswer(11)">Septyma wielka (7<)</button>
+            </div>
+            <div class="interval-item">
+                <input type="checkbox" id="interval-12" checked>
+                <button id="btn-interval-12" onclick="checkAnswer(12)">Oktawa (8)</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kontrolki testu -->
+    <section class="test-controls">
+        <button onclick="startTest()">Start</button>
+        <button onclick="repeatInterval()">Powtórz</button>
+        <div>
+            <label>Prawidłowe: <span id="correct-counter">0</span></label>
+            <label>Nieprawidłowe: <span id="wrong-counter">0</span></label>
+        </div>
+    </section>
+
+    <script>
+        const notes = {
+            'C2': '16.mp3',
+            'C#2': '17.mp3',
+            'D2': '18.mp3',
+            'D#2': '19.mp3',
+            'E2': '20.mp3',
+            'F2': '21.mp3',
+            'F#2': '22.mp3',
+            'G2': '23.mp3',
+            'G#2': '24.mp3',
+            'A2': '25.mp3',
+            'A#2': '26.mp3',
+            'B2': '27.mp3',
+            'C3': '28.mp3',
+            'C#3': '29.mp3',
+            'D3': '30.mp3',
+            'D#3': '31.mp3',
+            'E3': '32.mp3',
+            'F3': '33.mp3',
+            'F#3': '34.mp3',
+            'G3': '35.mp3',
+            'G#3': '36.mp3',
+            'A3': '37.mp3',
+            'A#3': '38.mp3',
+            'B3': '39.mp3',
+            'C4': '40.mp3',
+            'C#4': '41.mp3',
+            'D4': '42.mp3',
+            'D#4': '43.mp3',
+            'E4': '44.mp3',
+            'F4': '45.mp3',
+            'F#4': '46.mp3',
+            'G4': '47.mp3'
+        };
+
+        let correctCounter = 0;
+        let wrongCounter = 0;
+        let currentInterval = null;
+
+        // Funkcja do odtwarzania dźwięku
+        function playNoteAudio(note) {
+            if (notes[note]) { // Sprawdzanie, czy dźwięk istnieje
+                const audio = new Audio(notes[note]);
+                audio.play();
+            } else {
+                console.error('Dźwięk nie istnieje:', note);
+            }
+        }
+
+        // Funkcja do generowania losowego interwału z losową nutą początkową
+        function generateInterval() {
+            const availableIntervals = [];
+            for (let i = 0; i <= 12; i++) {
+                const checkbox = document.getElementById('interval-' + i);
+                if (checkbox && checkbox.checked) {
+                    availableIntervals.push(i);
+                }
+            }
+            if (availableIntervals.length === 0) {
+                alert('Wybierz przynajmniej jeden interwał!');
+                return null;
+            }
+            const randomIndex = Math.floor(Math.random() * availableIntervals.length);
+            return availableIntervals[randomIndex];
+        }
+
+        // Losowanie nuty początkowej
+        function getRandomBaseNote() {
+            const noteNames = Object.keys(notes);
+            const randomIndex = Math.floor(Math.random() * noteNames.length);
+            return noteNames[randomIndex];
+        }
+
+        // Funkcja do startu testu
+        function startTest() {
+            currentInterval = generateInterval();
+            if (currentInterval !== null) {
+                const baseNote = getRandomBaseNote();
+                playInterval(currentInterval, baseNote);
+            }
+        }
+
+        // Funkcja do odtwarzania interwału
+        function playInterval(interval, baseNote) {
+            const noteNames = Object.keys(notes);
+            const baseIndex = noteNames.indexOf(baseNote);
+            const nextNoteIndex = (baseIndex + interval) % noteNames.length;
+            let nextNote = noteNames[nextNoteIndex];
+
+            console.log('Odtwarzanie dźwięków:', baseNote, nextNote); // Dla debugu
+            playNoteAudio(baseNote);
+            setTimeout(() => playNoteAudio(nextNote), 1000);
+        }
+
+        // Funkcja do sprawdzenia odpowiedzi
+        function checkAnswer(interval) {
+            if (currentInterval === null) {
+                alert('Najpierw uruchom test!');
+                return;
+            }
+
+            if (interval === currentInterval) {
+                correctCounter++;
+                document.getElementById('correct-counter').textContent = correctCounter;
+                alert('Poprawna odpowiedź!');
+            } else {
+                wrongCounter++;
+                document.getElementById('wrong-counter').textContent = wrongCounter;
+                alert('Niepoprawna odpowiedź.');
+            }
+            setTimeout(startTest, 2000); // Automatyczne wygenerowanie nowego interwału po odpowiedzi
+        }
+
+        // Funkcja do powtórzenia interwału
+        function repeatInterval() {
+            if (currentInterval !== null) {
+                const baseNote = getRandomBaseNote();
+                playInterval(currentInterval, baseNote);
+            } else {
+                alert('Najpierw uruchom test!');
+            }
+        }
+
+        // Funkcja do wyłączania przycisków interwałów, gdy są odznaczone
+        document.querySelectorAll('input[type="checkbox"]').forEach((checkbox, index) => {
+            checkbox.addEventListener('change', function () {
+                const button = document.getElementById('btn-interval-' + index);
+                if (this.checked) {
+                    button.classList.remove('disabled');
+                } else {
+                    button.classList.add('disabled');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
